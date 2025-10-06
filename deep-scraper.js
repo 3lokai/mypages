@@ -328,8 +328,7 @@
                 );
                 e.target.classList.add('ds-highlight');
             };
-            document.addEventListener('mouseover', hoverListener);
-
+            
             const listener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
                 e.preventDefault();
@@ -345,6 +344,7 @@
                 `;
 
                 document.removeEventListener('click', listener, true);
+                document.addEventListener('mouseover', hoverListener);
                 document.body.classList.remove('highlight-mode');
                 window.deepScraper.preventClicks = false;
 
