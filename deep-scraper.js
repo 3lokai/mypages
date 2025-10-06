@@ -183,16 +183,13 @@
 
         // Stage 1: Select profile link
         document.getElementById('ds-select-link').onclick = () => {
-            window.deepScraper.preventClicks = true;
+            // Don't use preventClicks here - we just capture the link
             document.body.classList.add('highlight-mode');
             updateUI('<div class="ds-status">🖱️ Click on ANY profile link/name<br>(e.g., click on an attendee\'s name)</div>');
 
             const listener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-
+                
                 // Find the link element
                 let linkElement = e.target;
                 while (linkElement && linkElement.tagName !== 'A') {
@@ -204,11 +201,16 @@
                     return;
                 }
 
+                // Stop the navigation ONLY after we've found the link
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
                 window.deepScraper.linkSelector = generateSelector(linkElement);
                 linkElement.classList.add('ds-selected');
                 document.removeEventListener('click', listener, true);
+                document.removeEventListener('mouseover', hoverListener);
                 document.body.classList.remove('highlight-mode');
-                window.deepScraper.preventClicks = false;
                 collectUrls();
                 return false;
             };
