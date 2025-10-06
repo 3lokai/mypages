@@ -183,14 +183,12 @@
 
         // Stage 1: Select profile link
         document.getElementById('ds-select-link').onclick = () => {
-            // Don't use preventClicks here - we just capture the link
             document.body.classList.add('highlight-mode');
             updateUI('<div class="ds-status">🖱️ Click on ANY profile link/name<br>(e.g., click on an attendee\'s name)</div>');
 
             const listener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
                 
-                // Find the link element
                 let linkElement = e.target;
                 while (linkElement && linkElement.tagName !== 'A') {
                     linkElement = linkElement.parentElement;
@@ -201,7 +199,6 @@
                     return;
                 }
 
-                // Stop the navigation ONLY after we've found the link
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -217,7 +214,6 @@
 
             document.addEventListener('click', listener, true);
 
-            // Hover highlight
             const hoverListener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
                 document.querySelectorAll('.ds-highlight').forEach(el => 
@@ -242,6 +238,10 @@
             const links = document.querySelectorAll(window.deepScraper.linkSelector);
             const urls = [...new Set(Array.from(links).map(a => a.href))];
             window.deepScraper.urls = urls;
+
+            // Save to localStorage for persistence
+            localStorage.setItem('deepScraperUrls', JSON.stringify(urls));
+            localStorage.setItem('deepScraperStage', 'configure');
 
             updateUI(`
                 <div class="ds-status">
@@ -282,6 +282,8 @@
         // Show field configuration UI
         window.deepScraper.showConfigUI = () => {
             window.deepScraper.stage = 'configure';
+            localStorage.setItem('deepScraperStage', 'configure');
+            
             updateUI(`
                 <div class="ds-status">
                     🎨 Configure Fields<br>
@@ -292,6 +294,28 @@
                 <button onclick="window.deepScraper.startScraping()" id="ds-start" disabled>Start Deep Scrape</button>
                 <button onclick="window.deepScraper.close()" style="background:#ff5252;color:white;">Close</button>
             `);
+
+            // Restore saved fields if any
+            const savedFields = localStorage.getItem('deepScraperFields');
+            if (savedFields) {
+                window.deepScraper.fields = JSON.parse(savedFields);
+                window.deepScraper.fields.forEach((field, index) => {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.className = 'ds-field';
+                    fieldDiv.innerHTML = `
+                        <span id="field-${index}">
+                            <strong>${field.name}:</strong> ${field.selector ? '✅ Selected' : 'Not selected'}
+                        </span>
+                        <button onclick="window.deepScraper.selectField(${index})">Select</button>
+                    `;
+                    document.getElementById('ds-fields').appendChild(fieldDiv);
+                });
+                
+                // Enable start button if fields are configured
+                if (window.deepScraper.fields.some(f => f.selector)) {
+                    document.getElementById('ds-start').disabled = false;
+                }
+            }
         };
 
         // Add field
@@ -312,16 +336,17 @@
                 <button onclick="window.deepScraper.selectField(${fieldIndex})">Select</button>
             `;
             document.getElementById('ds-fields').appendChild(fieldDiv);
+
+            // Save fields to localStorage
+            localStorage.setItem('deepScraperFields', JSON.stringify(window.deepScraper.fields));
         };
 
         // Select field element
         window.deepScraper.selectField = (index) => {
-
-             // Enable click blocking for field selection (we don't want navigation here)
             window.deepScraper.preventClicks = true;
             document.body.classList.add('highlight-mode');
 
-             const hoverListener = (e) => {
+            const hoverListener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
                 document.querySelectorAll('.ds-highlight').forEach(el => 
                     el.classList.remove('ds-highlight')
@@ -336,7 +361,6 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
-                
                 const selector = generateSelector(e.target);
                 window.deepScraper.fields[index].selector = selector;
                 e.target.classList.add('ds-selected');
@@ -349,6 +373,9 @@
                 document.removeEventListener('mouseover', hoverListener);
                 document.body.classList.remove('highlight-mode');
                 window.deepScraper.preventClicks = false;
+
+                // Save updated fields
+                localStorage.setItem('deepScraperFields', JSON.stringify(window.deepScraper.fields));
 
                 // Enable start button if at least one field selected
                 if (window.deepScraper.fields.some(f => f.selector)) {
@@ -382,6 +409,12 @@
             window.deepScraper.stage = 'scraping';
             window.deepScraper.scrapedData = [];
             window.deepScraper.currentIndex = 0;
+
+            // Save scraping state
+            localStorage.setItem('deepScraperStage', 'scraping');
+            localStorage.setItem('deepScraperData', JSON.stringify([]));
+            localStorage.setItem('deepScraperIndex', '0');
+
             scrapeNextProfile();
         };
 
@@ -400,6 +433,11 @@
                 a.href = URL.createObjectURL(blob);
                 a.download = `deep-scraped-data-${Date.now()}.csv`;
                 a.click();
+
+                // Clear localStorage
+                localStorage.removeItem('deepScraperStage');
+                localStorage.removeItem('deepScraperData');
+                localStorage.removeItem('deepScraperIndex');
 
                 setTimeout(() => {
                     updateUI(`
@@ -447,6 +485,10 @@
                 window.deepScraper.scrapedData.push(row);
                 window.deepScraper.currentIndex++;
 
+                // Save progress
+                localStorage.setItem('deepScraperData', JSON.stringify(window.deepScraper.scrapedData));
+                localStorage.setItem('deepScraperIndex', window.deepScraper.currentIndex.toString());
+
                 // Move to next profile after delay
                 setTimeout(scrapeNextProfile, 2000);
             }, 3000);
@@ -457,22 +499,51 @@
             ui.remove();
             style.remove();
             document.removeEventListener('click', clickBlocker, true);
+            
+            // Clear all localStorage
+            localStorage.removeItem('deepScraperUrls');
+            localStorage.removeItem('deepScraperStage');
+            localStorage.removeItem('deepScraperFields');
+            localStorage.removeItem('deepScraperData');
+            localStorage.removeItem('deepScraperIndex');
+            
             delete window.deepScraper;
         };
 
         // Wire up close button
         document.getElementById('ds-close').onclick = window.deepScraper.close;
 
-        // Auto-detect if we're on a profile page (returning from URL collection)
-        if (window.deepScraper.urls && window.deepScraper.urls.length > 0 && window.deepScraper.stage === 'collect') {
+        // Auto-detect stage from localStorage and restore state
+        const savedUrls = localStorage.getItem('deepScraperUrls');
+        const savedStage = localStorage.getItem('deepScraperStage');
+        const savedFields = localStorage.getItem('deepScraperFields');
+        const savedData = localStorage.getItem('deepScraperData');
+        const savedIndex = localStorage.getItem('deepScraperIndex');
+
+        if (savedUrls) {
+            window.deepScraper.urls = JSON.parse(savedUrls);
+        }
+
+        if (savedFields) {
+            window.deepScraper.fields = JSON.parse(savedFields);
+        }
+
+        if (savedStage === 'configure' && savedUrls) {
+            window.deepScraper.stage = 'configure';
             updateUI(`
                 <div class="ds-status">
-                    ✅ Returning to scraper...<br>
+                    ✅ Ready to configure fields!<br>
                     Found ${window.deepScraper.urls.length} profiles
                 </div>
                 <button onclick="window.deepScraper.showConfigUI()">Configure Fields</button>
                 <button onclick="window.deepScraper.close()" style="background:#ff5252;color:white;">Close</button>
             `);
+        } else if (savedStage === 'scraping' && savedUrls && savedData && savedIndex) {
+            // Resume scraping
+            window.deepScraper.stage = 'scraping';
+            window.deepScraper.scrapedData = JSON.parse(savedData);
+            window.deepScraper.currentIndex = parseInt(savedIndex);
+            scrapeNextProfile();
         }
     }
 })();
