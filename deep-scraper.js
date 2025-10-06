@@ -359,7 +359,8 @@
             };
 
             document.addEventListener('click', listener, true);
-
+        };
+        
         // Start scraping all profiles
         window.deepScraper.startScraping = async () => {
             if (!window.deepScraper.fields.filter(f => f.selector).length) {
