@@ -316,8 +316,19 @@
 
         // Select field element
         window.deepScraper.selectField = (index) => {
+
+             // Enable click blocking for field selection (we don't want navigation here)
             window.deepScraper.preventClicks = true;
             document.body.classList.add('highlight-mode');
+
+             const hoverListener = (e) => {
+                if (e.target.closest('#ds-ui')) return;
+                document.querySelectorAll('.ds-highlight').forEach(el => 
+                    el.classList.remove('ds-highlight')
+                );
+                e.target.classList.add('ds-highlight');
+            };
+            document.addEventListener('mouseover', hoverListener);
 
             const listener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
