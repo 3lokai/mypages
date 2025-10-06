@@ -328,6 +328,7 @@
                 );
                 e.target.classList.add('ds-highlight');
             };
+            document.addEventListener('mouseover', hoverListener);
             
             const listener = (e) => {
                 if (e.target.closest('#ds-ui')) return;
@@ -335,6 +336,7 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
+                
                 const selector = generateSelector(e.target);
                 window.deepScraper.fields[index].selector = selector;
                 e.target.classList.add('ds-selected');
@@ -344,7 +346,7 @@
                 `;
 
                 document.removeEventListener('click', listener, true);
-                document.addEventListener('mouseover', hoverListener);
+                document.removeEventListener('mouseover', hoverListener);
                 document.body.classList.remove('highlight-mode');
                 window.deepScraper.preventClicks = false;
 
@@ -357,18 +359,6 @@
             };
 
             document.addEventListener('click', listener, true);
-
-            // Hover highlight
-            const hoverListener = (e) => {
-                if (e.target.closest('#ds-ui')) return;
-                document.querySelectorAll('.ds-highlight').forEach(el => 
-                    el.classList.remove('ds-highlight')
-                );
-                e.target.classList.add('ds-highlight');
-            };
-            document.addEventListener('mouseover', hoverListener);
-            setTimeout(() => document.removeEventListener('mouseover', hoverListener), 30000);
-        };
 
         // Start scraping all profiles
         window.deepScraper.startScraping = async () => {
