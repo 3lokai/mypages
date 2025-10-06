@@ -530,6 +530,7 @@
 
         if (savedStage === 'configure' && savedUrls) {
             window.deepScraper.stage = 'configure';
+            window.deepScraper.preventClicks = false; // IMPORTANT: Reset this!
             updateUI(`
                 <div class="ds-status">
                     ✅ Ready to configure fields!<br>
@@ -541,6 +542,7 @@
         } else if (savedStage === 'scraping' && savedUrls && savedData && savedIndex) {
             // Resume scraping
             window.deepScraper.stage = 'scraping';
+             window.deepScraper.preventClicks = false; // IMPORTANT: Reset this!
             window.deepScraper.scrapedData = JSON.parse(savedData);
             window.deepScraper.currentIndex = parseInt(savedIndex);
             scrapeNextProfile();
