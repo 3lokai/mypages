@@ -124,6 +124,7 @@
             padding: 15px;
             margin: 15px 0;
             border-radius: 5px;
+            line-height: 1.6;
         }
         
         .instruction strong {
@@ -208,35 +209,6 @@
             margin: 15px 0;
             border-radius: 5px;
         }
-
-        .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            line-height: 1.5;
-        }
-
-        .download-btn {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 10px 5px;
-            transition: all 0.2s;
-        }
-
-        .download-btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body>
@@ -267,35 +239,35 @@
         </div>
 
         <div class="section">
-            <h2>📥 Download the Scraper</h2>
-            <div class="instruction">
-                <strong>Option 1: Quick Bookmarklet (Recommended)</strong><br>
-                Save the JavaScript file below as <code>deep-scraper.js</code>, host it somewhere accessible (GitHub Pages, your server, etc.), then create this bookmarklet:
+            <h2>📌 Installation</h2>
+            <div class="bookmarklet-box">
+                <p style="margin-bottom: 15px; color: #666; font-size: 1.1em;">
+                    <strong>Drag this button to your bookmarks bar:</strong>
+                </p>
+                <a href="javascript:(function(){const s=document.createElement('script');s.src='https://3lokai.github.io/mypages/deep-scraper.js';document.head.appendChild(s);})();" class="bookmarklet-link">🔍 Deep Scraper</a>
+                <p style="margin-top: 20px; color: #666; font-size: 0.9em;">
+                    <strong>How to install:</strong><br>
+                    1. Click and drag the button above to your bookmarks bar<br>
+                    2. Or right-click it and select "Bookmark this link"<br>
+                    3. Click the bookmark on any page to activate the scraper!
+                </p>
             </div>
             
-            <div class="code-block">
-javascript:(function(){const s=document.createElement('script');s.src='https://YOUR-DOMAIN.com/deep-scraper.js';document.head.appendChild(s);})()
+            <div class="instruction">
+                <strong>💡 Tip:</strong> If you can't see your bookmarks bar, press <code>Ctrl+Shift+B</code> (Windows) or <code>Cmd+Shift+B</code> (Mac) to show it.
             </div>
 
-            <div class="instruction" style="margin-top: 20px;">
-                <strong>Option 2: Local Setup</strong><br>
-                1. Download the JavaScript file below<br>
-                2. Save it as <code>deep-scraper.js</code><br>
-                3. Open it in a text editor and copy all the code<br>
-                4. Create a bookmark and paste the ENTIRE code as the URL<br>
-                5. Or just run it in the browser console on any page
+            <div class="instruction" style="margin-top: 15px; background: #f0f9ff; border-left-color: #0284c7;">
+                <strong>🔗 Hosted at:</strong> <code>https://3lokai.github.io/mypages/deep-scraper.js</code><br>
+                Open source and ready to share with your team!
             </div>
-
-            <p style="text-align: center; margin: 20px 0;">
-                <a href="#" class="download-btn" onclick="downloadScript(); return false;">📥 Download deep-scraper.js</a>
-            </p>
         </div>
         
         <div class="section">
             <h2>📖 Complete Usage Guide</h2>
             <ol class="steps">
                 <li><strong>Go to attendee list page</strong> - Log in if needed, navigate to the page showing all attendees/profiles</li>
-                <li><strong>Click the bookmarklet</strong> (or paste script in console) - The scraper UI appears in the top-right corner</li>
+                <li><strong>Click the bookmarklet</strong> - The scraper UI appears in the top-right corner</li>
                 <li><strong>Click "Select Profile Link"</strong> - Then click on ANY attendee's name (even if it's a hyperlink)</li>
                 <li><strong>Wait for collection</strong> - Scraper automatically clicks "Load More" and collects all profile URLs</li>
                 <li><strong>Click "Configure Fields"</strong> - Opens the first profile as a sample</li>
@@ -384,20 +356,29 @@ javascript:(function(){const s=document.createElement('script');s.src='https://Y
                 <strong>⚖️ Legal & Ethics:</strong> Only scrape data you have permission to access. Respect website terms of service and robots.txt. Use responsibly.
             </div>
         </div>
-    </div>
 
-    <script>
-        function downloadScript() {
-            // This will download the JS file from the next artifact
-            const scriptContent = `// See the "Deep Scraper - JavaScript" artifact for the complete code`;
-            const blob = new Blob([scriptContent], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'deep-scraper.js';
-            a.click();
-            alert('Note: Get the complete code from the "Deep Scraper - JavaScript" artifact!');
-        }
-    </script>
+        <div class="section">
+            <h2>🔧 Troubleshooting</h2>
+            <div class="instruction">
+                <strong>Q: Bookmarklet not working?</strong><br>
+                A: Try right-clicking the button and selecting "Bookmark this link". Or create a bookmark manually and paste the JavaScript URL.
+            </div>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>Q: It's not finding any profiles?</strong><br>
+                A: Make sure you clicked on an actual link (&lt;a&gt; tag) that goes to profile pages. Try clicking directly on the attendee's name.
+            </div>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>Q: Fields are coming up empty?</strong><br>
+                A: The selectors might not be robust. Try selecting the direct text element, not a parent container. Test with 2-3 profiles first.
+            </div>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>Q: Can I pause and resume?</strong><br>
+                A: Currently no. The scraper needs to run continuously. For large scrapes (500+), consider running overnight.
+            </div>
+        </div>
+    </div>
 </body>
 </html>
