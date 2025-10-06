@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Deep Profile Scraper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .workflow {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+
+        .workflow h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .workflow-steps {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .workflow-step h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .workflow-step p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .bookmarklet-box {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .bookmarklet-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: move;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .bookmarklet-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .instruction {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .instruction strong {
+            color: #1976d2;
+        }
+        
+        .steps {
+            list-style: none;
+            counter-reset: step;
+        }
+        
+        .steps li {
+            counter-increment: step;
+            margin: 15px 0;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .steps li:before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #667eea;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .feature-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            font-size: 0.9em;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Universal Deep Profile Scraper</h1>
+        <p class="subtitle">Two-stage scraper: Collect URLs → Deep scrape profiles</p>
+
+        <div class="success">
+            <strong>✨ What Makes This Special:</strong> Works on ANY website - HLTH, LinkedIn events, conference platforms, or any site with profile links. Configure once, scrape hundreds of profiles automatically!
+        </div>
+
+        <div class="workflow">
+            <h3>🎯 How It Works:</h3>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <h4>📋 Stage 1: Collect Profile URLs</h4>
+                    <p>On the attendee list page, select which element contains profile links. The scraper will automatically find all matching profiles and handle pagination ("Load More" buttons).</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🎨 Stage 2: Configure Fields</h4>
+                    <p>Opens ONE sample profile. Click on elements you want to scrape (Name, Title, Company, etc.). This configuration will be used for ALL profiles.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🚀 Stage 3: Auto-Scrape Everything</h4>
+                    <p>Automatically visits each profile URL, extracts your configured fields, shows progress, and downloads a complete CSV with all data.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📥 Download the Scraper</h2>
+            <div class="instruction">
+                <strong>Option 1: Quick Bookmarklet (Recommended)</strong><br>
+                Save the JavaScript file below as <code>deep-scraper.js</code>, host it somewhere accessible (GitHub Pages, your server, etc.), then create this bookmarklet:
+            </div>
+            
+            <div class="code-block">
+javascript:(function(){const s=document.createElement('script');s.src='https://YOUR-DOMAIN.com/deep-scraper.js';document.head.appendChild(s);})()
+            </div>
+
+            <div class="instruction" style="margin-top: 20px;">
+                <strong>Option 2: Local Setup</strong><br>
+                1. Download the JavaScript file below<br>
+                2. Save it as <code>deep-scraper.js</code><br>
+                3. Open it in a text editor and copy all the code<br>
+                4. Create a bookmark and paste the ENTIRE code as the URL<br>
+                5. Or just run it in the browser console on any page
+            </div>
+
+            <p style="text-align: center; margin: 20px 0;">
+                <a href="#" class="download-btn" onclick="downloadScript(); return false;">📥 Download deep-scraper.js</a>
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2>📖 Complete Usage Guide</h2>
+            <ol class="steps">
+                <li><strong>Go to attendee list page</strong> - Log in if needed, navigate to the page showing all attendees/profiles</li>
+                <li><strong>Click the bookmarklet</strong> (or paste script in console) - The scraper UI appears in the top-right corner</li>
+                <li><strong>Click "Select Profile Link"</strong> - Then click on ANY attendee's name (even if it's a hyperlink)</li>
+                <li><strong>Wait for collection</strong> - Scraper automatically clicks "Load More" and collects all profile URLs</li>
+                <li><strong>Click "Configure Fields"</strong> - Opens the first profile as a sample</li>
+                <li><strong>Add fields</strong> - Click "+ Add Field", enter field name (e.g., "Name"), click "Select", then click the element on the profile</li>
+                <li><strong>Repeat for all fields</strong> - Add Title, Company, Location, Budget, Interests, etc.</li>
+                <li><strong>Click "Start Deep Scrape"</strong> - Confirms the number of profiles and estimated time</li>
+                <li><strong>Let it run</strong> - Keep the tab open. Watch the progress bar. It will visit each profile automatically</li>
+                <li><strong>Download CSV</strong> - When complete, CSV downloads automatically with all scraped data</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h2>✨ Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-title">🌐 Universal</div>
+                    <div class="feature-desc">Works on any website - HLTH, event platforms, directories</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">🎯 Visual Config</div>
+                    <div class="feature-desc">Click elements to select - no coding needed</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">🔄 Auto Pagination</div>
+                    <div class="feature-desc">Handles "Load More" buttons automatically</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">🚀 Fully Automated</div>
+                    <div class="feature-desc">Visits hundreds of profiles without manual clicking</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">📊 Progress Tracking</div>
+                    <div class="feature-desc">Real-time progress bar shows completion status</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">💾 CSV Export</div>
+                    <div class="feature-desc">Clean spreadsheet with all extracted data</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>💡 Example: Scraping HLTH Conference</h2>
+            <div class="instruction">
+                <strong>Stage 1 - Collect URLs:</strong><br>
+                • Navigate to: https://id.hlth.com/events/hlth25/market_connect/explore/attendees<br>
+                • Click bookmarklet → Select Profile Link<br>
+                • Click on "Brandon Walker" (or any name)<br>
+                • Wait as it loads all pages → "Found 250 profiles!"
+            </div>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>Stage 2 - Configure Fields:</strong><br>
+                • Click "Configure Fields" → Sample profile opens<br>
+                • Add Field "Name" → Click on "Brandon Walker"<br>
+                • Add Field "Title" → Click on "Director, National Accounts..."<br>
+                • Add Field "Company" → Click on "Servier"<br>
+                • Add Field "Location" → Click on "Oceanside, California"<br>
+                • Add more fields as needed (Budget, Interests, etc.)
+            </div>
+            
+            <div class="instruction" style="margin-top: 15px;">
+                <strong>Stage 3 - Auto Scrape:</strong><br>
+                • Click "Start Deep Scrape"<br>
+                • Confirm: "Scrape 250 profiles? Takes ~21 minutes"<br>
+                • Watch progress: "Scraping profile 45/250... 18% complete"<br>
+                • CSV auto-downloads when done!
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>⚠️ Important Notes</h2>
+            <div class="warning">
+                <strong>⏱️ Time Estimates:</strong> Scraping uses 5 seconds per profile (3s load + 2s wait). For 100 profiles = ~8 minutes. For 500 profiles = ~42 minutes.
+            </div>
+            
+            <div class="warning" style="margin-top: 15px;">
+                <strong>🖥️ Keep Tab Open:</strong> The scraper runs in your browser tab. Don't close it, switching tabs is fine. If interrupted, you'll need to restart.
+            </div>
+            
+            <div class="warning" style="margin-top: 15px;">
+                <strong>🔒 Privacy:</strong> Everything runs in YOUR browser. No data is sent to any server. The scraped data stays on your computer.
+            </div>
+            
+            <div class="warning" style="margin-top: 15px;">
+                <strong>⚖️ Legal & Ethics:</strong> Only scrape data you have permission to access. Respect website terms of service and robots.txt. Use responsibly.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadScript() {
+            // This will download the JS file from the next artifact
+            const scriptContent = `// See the "Deep Scraper - JavaScript" artifact for the complete code`;
+            const blob = new Blob([scriptContent], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'deep-scraper.js';
+            a.click();
+            alert('Note: Get the complete code from the "Deep Scraper - JavaScript" artifact!');
+        }
+    </script>
+</body>
+</html>
